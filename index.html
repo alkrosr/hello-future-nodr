@@ -21,8 +21,7 @@
 <script>
     let tlprt;
 
-    function initApp()
-    {
+    function initApp() {
         let hls = new Hls({
             maxBufferLength: 30,
             maxMaxBufferLength: 30,
@@ -32,12 +31,10 @@
             // liveSyncDuration: 30
         });
         let video = document.getElementById('video');
-
-        hls.loadSource("https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8");
+        hls.loadSource("http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8");
         hls.attachMedia(video);
 
-        hls.on(Hls.Events.MANIFEST_PARSED, function ()
-        {
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
             video.play();
         });
         teleport.initialize({
@@ -71,22 +68,18 @@
                 }
             }
         })
-            .then(function (instance)
-            {
+            .then(function (instance) {
                 tlprt = instance;
 
                 let console = new DevTools(instance, {
                     container: document.querySelector("#dev-tools")
                 });
             })
-            .then(function ()
-            {
+            .then(function () {
                 // This runs if the asynchronous load is successful.
                 console.log("The video has now been loaded!");
-                window.addEventListener("unload", function ()
-                {
-                    if (tlprt)
-                    {
+                window.addEventListener("unload", function () {
+                    if (tlprt) {
                         tlprt.dispose();
                         tlprt = null;
                     }
@@ -95,14 +88,12 @@
             .catch(onError);
     }
 
-    function onErrorEvent(event)
-    {
+    function onErrorEvent(event) {
         // Extract the shaka.util.Error object from the event.
         onError(event.detail);
     }
 
-    function onError(error)
-    {
+    function onError(error) {
         // Log the error.
         console.error("Error code", error.code, "object", error);
     }
