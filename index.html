@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--[if IE]>
+    <script src="./teleport.polyfill.js"></script>
+    <![endif]-->
+    <title>DEMO NODR</title>
+</head>
+<body>
+<video id="video"
+       width="640"
+       muted
+       poster="https://cloud.githubusercontent.com/assets/616833/19739063/e10be95a-9bb9-11e6-8100-2896f8500138.png"
+       controls autoplay></video>
+<div id="dev-tools"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/0.12.4/hls.js"></script>
+<script src="https://cdn.teleport.media/stable/teleport.hlsjs.bundle.js"></script>
+<script src="https://cdn.teleport.media/stable/teleport.dev-tools.js"></script>
+<script src="./js/_dev_tools.js"></script>
+<script>
+    let tlprt;
+
+    function initApp()
+    {
+        let hls = new Hls({
+            maxBufferLength: 30,
+            maxMaxBufferLength: 30,
+            manifestLoadingTimeOut: 15000,
+            levelLoadingTimeOut: 15000,
+            liveSyncDurationCount: 6
+            // liveSyncDuration: 30
+        });
+        let video = document.getElementById('video');
+
+        hls.loadSource("https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8");
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED, function ()
+        {
+            video.play();
+        });
+        teleport.initialize({
+            apiKey: "207a61c76189545f",
+            config: {
+                timeSlotRegexp: /\d*\.ts$/,
+                rtcSoftDownloadTimeout: 3000,
+                blacklistErrorRate: 50,
+                initialStateInterval: 1000,
+                stateInterval: 30000,
+                searchInterval: 10000,
+                searchSwarmSize: 3,
+                streamingUpload: 1,
+                partialDownload: 1,
+                pdnPartialDownload: 1,
+                // statAggRatioVideoCdn: 10,
+                // statAggRatioVideoPdn: 2,
+                silentActivityLimit: 20000,
+                seedChance: 0,
+                sendSwarmSnapshot: 1,
+                availablePdnTransport: 3,
+                rtcDownloadTimeout: 1,
+                metricsInfoLevel: 0,
+                nodrStrategy: 1 + (1 << 1) + (1 << 2)
+            },
+            loader: {
+                type: "hlsjs",
+                params: {
+                    hlsjs: hls,
+                    urlCleaner: (x) => new URL(x).pathname
+                }
+            }
+        })
+            .then(function (instance)
+            {
+                tlprt = instance;
+
+                let console = new DevTools(instance, {
+                    container: document.querySelector("#dev-tools")
+                });
+            })
+            .then(function ()
+            {
+                // This runs if the asynchronous load is successful.
+                console.log("The video has now been loaded!");
+                window.addEventListener("unload", function ()
+                {
+                    if (tlprt)
+                    {
+                        tlprt.dispose();
+                        tlprt = null;
+                    }
+                });
+            })
+            .catch(onError);
+    }
+
+    function onErrorEvent(event)
+    {
+        // Extract the shaka.util.Error object from the event.
+        onError(event.detail);
+    }
+
+    function onError(error)
+    {
+        // Log the error.
+        console.error("Error code", error.code, "object", error);
+    }
+
+    document.addEventListener("DOMContentLoaded", initApp);
+</script>
+</body>
+</html>
