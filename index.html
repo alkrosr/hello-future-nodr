@@ -13,10 +13,10 @@
        muted
        poster="https://cloud.githubusercontent.com/assets/616833/19739063/e10be95a-9bb9-11e6-8100-2896f8500138.png"
        controls autoplay></video>
-<div id="dev-tools"></div>
+<div id="dev-tools-nodr"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/0.12.4/hls.js"></script>
 <script src="https://cdn.teleport.media/stable/teleport.hlsjs.bundle.js"></script>
-<script src="https://cdn.teleport.media/stable/teleport.dev-tools.js"></script>
+<script src="https://cdn.teleport.media/stable/teleport.dev-tools-nodr.js"></script>
 <script src="./js/_dev_tools.js"></script>
 <script>
     let tlprt;
@@ -72,8 +72,8 @@
             .then(function (instance) {
                 tlprt = instance;
 
-                let console = new DevTools(instance, {
-                    container: document.querySelector("#dev-tools")
+                let console = new DevToolsNodr(instance, {
+                    container: document.querySelector("#dev-tools-nodr")
                 });
             })
             .then(function () {
